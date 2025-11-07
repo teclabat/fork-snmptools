@@ -48,7 +48,6 @@
 #   define TMP "/tmp"
 #endif
 
-Tcl_DString Result;
 extern Tcl_DString Result;
 
 int printres(const char *fmt, ...);

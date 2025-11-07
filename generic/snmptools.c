@@ -39,6 +39,8 @@ static int snmpCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj 
 
 static int sessionCmd(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[]);
 
+Tcl_DString Result;
+
 /*
  * Function Bodies
  */
