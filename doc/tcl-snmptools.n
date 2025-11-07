@@ -1,0 +1,541 @@
+.TH "tcl-snmptools" "n" "1.0" "Tcl-Extensions" ""
+.SH "NAME"
+tcl\-snmptools \- Tcl SNMP tools for managing remote agents
+.SH "SYNOPSIS"
+\fBsnmp session\fI session arguments\fR
+.PP 
+\fBsnmp translate\fI arguments\fR
+.PP 
+\fBsnmp trap\fI arguments\fR
+.PP 
+\fBsnmp inform\fI arguments\fR
+.PP 
+\fBsnmp keychange\fI arguments\fR
+.PP 
+\fBsnmp ucm\fI arguments\fR
+.PP 
+\fBsnmp vacm\fI arguments\fR
+.PP 
+\fIsession\fB close\fI\fR
+.PP 
+\fIsession\fB get\fI arguments\fR
+.PP 
+\fIsession\fB getnext\fI arguments\fR
+.PP 
+\fIsession\fB set\fI arguments\fR
+.PP 
+\fIsession\fB walk\fI arguments\fR
+.PP 
+\fIsession\fB bulkget\fI arguments\fR
+.PP 
+\fIsession\fB bulkwalk\fI arguments\fR
+.PP 
+\fIsession\fB table\fI arguments\fR
+
+.SH "DESCRIPTION"
+This is a Tcl package that provides SNMP tools for managing remote Agents. It uses the NetSNMP library and supports all standard SNMP v1/v2/v3 operations and more: get, set, getnext, walk, bulkget, bulkwalk, trap, translate and table.
+.PP 
+It has been written after the NetSNMP command line tools, and shares the same syntax and functionality with them. A notable difference is that in tcl\-snmptools a session is created first, and then SNMP operations can be used over it.
+.PP 
+\fBsnmp session\fI session arguments\fR
+.PP 
+Creates an snmp session, incarnated in the form of a new Tcl command named \fIsession\fR. The arguments \fIarguments\fR are documented in snmpcmd(1) of the NetSNMP program. The most relevant to Tcl parameters are: \-Oq \-Of \-On \-Oe \-OU \-OX \-Ov \-OS \-OE \-Ob \-Ot \-OT
+.PP 
+\fBsnmp translate\fI arguments\fR
+.PP 
+Translates MIB OID names between numeric and textual forms. \fIarguments\fR are documented in snmptranslate(1) of the NetSNMP program.
+.PP 
+\fBsnmp trap\fI arguments\fR
+.PP 
+Sends SNMP traps to a manager. \fIarguments\fR are documented in snmptrap(1) of the NetSNMP program.
+.PP 
+\fBsnmp inform\fI arguments\fR
+.PP 
+Sends SNMP informs to a manager. \fIarguments\fR are documented in snmpinform(1) of the NetSNMP program.
+.PP 
+\fBsnmp keychange\fI arguments\fR
+.PP 
+This function is not implemented yet.
+.PP 
+\fBsnmp ucm\fI arguments\fR
+.PP 
+This function is not implemented yet.
+.PP 
+\fBsnmp vacm\fI arguments\fR
+.PP 
+This function is not implemented yet.
+.PP 
+\fIsession\fB close\fI\fR
+.PP 
+Closes an active session, removes the associated command any reserved memory.
+.PP 
+\fIsession\fB get\fI arguments\fR
+.PP 
+Communicates with a network entity using SNMP GET requests. \fIarguments\fR are documented in snmpget(1) of the NetSNMP program.
+.PP 
+\fIsession\fB getnext\fI arguments\fR
+.PP 
+Communicates with a network entity using SNMP GETNEXT requests. \fIarguments\fR are documented in snmpgetnext(1) of the NetSNMP program.
+.PP 
+\fIsession\fB set\fI arguments\fR
+.PP 
+Communicates with a network entity using SNMP SET requests. \fIarguments\fR are documented in snmpset(1) of the NetSNMP program.
+.PP 
+\fIsession\fB walk\fI arguments\fR
+.PP 
+Retrieves a subtree of management values using SNMP GETNEXT requests. \fIarguments\fR are documented in snmpwalk(1) of the NetSNMP program.
+.PP 
+\fIsession\fB bulkget\fI arguments\fR
+.PP 
+Communicates with a network entity using SNMP GETBULK requests. \fIarguments\fR are documented in bulkget(1) of the NetSNMP program.
+.PP 
+\fIsession\fB bulkwalk\fI arguments\fR
+.PP 
+Retrieves a subtree of management values using SNMP GETBULK requests. \fIarguments\fR are documented in snmpbulkwalk(1) of the NetSNMP program.
+.PP 
+\fIsession\fB table\fI arguments\fR
+.PP 
+Retrieves an SNMP table. \fIarguments\fR are documented in snmptable(1) of the NetSNMP program.
+.SH "EXAMPLE GET"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v1 \-c public localhost]
+
+puts "Getting.."
+set ret [lo get sysLocation.0 sysName.0 system.sysUpTime.0 system.sysContact.0]
+puts "Result: $ret"
+puts "errorInfo: \n$errorInfo"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT GET"
+.nf 
+Opening..
+Getting..
+Result: {SNMPv2\-MIB::sysLocation.0 = STRING: Mobile}
+{SNMPv2\-MIB::sysName.0 = STRING: alexster}
+{DISMAN\-EVENT\-MIB::sysUpTimeInstance = Timeticks: (966) 0:00:09.66}
+{SNMPv2\-MIB::sysContact.0 = STRING: alex}
+
+errorInfo:
+
+Closing..
+.fo
+.SH "EXAMPLE GETNEXT"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v1 \-c public localhost]
+
+puts "Getting.."
+catch {set ret [lo getnext sysLocation.0 sysName.0 system.sysUpTime.0 system.sysContact.0]}
+puts "Result: $ret"
+puts "errorInfo: \n$errorInfo"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT GETNEXT"
+.nf 
+Opening..
+Getting..
+Result: {SNMPv2\-MIB::sysServices.0 = INTEGER: 12}
+{SNMPv2\-MIB::sysLocation.0 = STRING: Mobile}
+{SNMPv2\-MIB::sysContact.0 = STRING: alex}
+{SNMPv2\-MIB::sysName.0 = STRING: alexster}
+
+errorInfo:
+
+Closing..
+.fo
+.SH "EXAMPLE SET"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v1 \-c private localhost]
+
+puts "Setting.."
+puts "Old:[lo get sysName.0]"
+lo set sysName.0 s testname
+puts "New:[lo get sysName.0]"
+puts "errorInfo: \n$errorInfo"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT SET"
+.nf 
+Opening..
+Setting..
+Old:{SNMPv2\-MIB::sysName.0 = STRING: default}
+
+New:{SNMPv2\-MIB::sysName.0 = STRING: testname}
+
+errorInfo:
+
+Closing..
+.fo
+.SH "EXAMPLE WALK"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v1 \-Ov \-Oe \-Oq \-OU \-Ot \-c public localhost]
+
+puts "Walking.."
+set ret [lo walk system]
+puts "Result: $ret"
+puts "errorInfo: \n$errorInfo"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT WALK"
+.nf 
+Opening..
+Walking..
+Result: {Linux localhost 2.6.22.13\-0.3\-default #1 SMP 2007/11/19 15:02:58 UTC x86_64}
+{NET\-SNMP\-MIB::netSnmpAgentOIDs.10}
+{28170}
+{alex}
+{testname}
+{Mobile}
+{12}
+{6}
+{SNMP\-FRAMEWORK\-MIB::snmpFrameworkMIBCompliance}
+{SNMP\-MPD\-MIB::snmpMPDCompliance}
+{SNMP\-USER\-BASED\-SM\-MIB::usmMIBCompliance}
+{SNMPv2\-MIB::snmpMIB}
+{TCP\-MIB::tcpMIB}
+{IP\-MIB::ip}
+{UDP\-MIB::udpMIB}
+{SNMP\-VIEW\-BASED\-ACM\-MIB::vacmBasicGroup}
+{The SNMP Management Architecture MIB.}
+{The MIB for Message Processing and Dispatching.}
+{The management information definitions for the SNMP User\-based Security Model.}
+{The MIB module for SNMPv2 entities}
+{The MIB module for managing TCP implementations}
+{The MIB module for managing IP and ICMP implementations}
+{The MIB module for managing UDP implementations}
+{View\-based Access Control Model for SNMP.}
+{6}
+{6}
+{6}
+{6}
+{6}
+{6}
+{6}
+{6}
+
+errorInfo:
+
+Closing..
+.fo
+.SH "EXAMPLE BULKGET"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v2c \-Os \-c public localhost]
+
+puts "{[lo bulkget \-h]}"
+
+puts "Getting.."
+set ret [lo bulkget \-Cn1 \-Cr5 system ifTable]
+puts "Result: $ret"
+puts "errorInfo: \n{$errorInfo}"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT BULKGET"
+.nf 
+Opening..
+{USAGE: bulkget  OID [OID]...
+
+  \-h            This help message
+  \-C APPOPTS            Set various application specific behaviours:
+                          n<NUM>:  set non\-repeaters to <NUM>
+                          r<NUM>:  set max\-repeaters to <NUM>
+}
+Getting..
+Result: {sysDescr.0 = STRING: Linux localhost 2.6.22.13\-0.3\-default #1 SMP 2007/11/19 15:02:58 UTC x86_64}
+{ifIndex.1 = INTEGER: 1}
+{ifIndex.2 = INTEGER: 2}
+{ifIndex.3 = INTEGER: 3}
+{ifDescr.1 = STRING: lo}
+{ifDescr.2 = STRING: eth0}
+
+errorInfo:
+{}
+Closing..
+.fo
+.SH "EXAMPLE BULKWALK"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v2c \-Ov \-Oe \-Oq \-OU \-Ot \-c public localhost]
+
+puts "Walking.."
+set ret [lo bulkwalk system]
+puts "Result: $ret"
+puts "errorInfo: \n$errorInfo"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT BULKWALK"
+.nf 
+Opening..
+Walking..
+Result: {Linux localhost 2.6.22.13\-0.3\-default #1 SMP 2007/11/19 15:02:58 UTC x86_64}
+{NET\-SNMP\-MIB::netSnmpAgentOIDs.10}
+{36470}
+{alex}
+{testname}
+{Mobile}
+{12}
+{6}
+{SNMP\-FRAMEWORK\-MIB::snmpFrameworkMIBCompliance}
+{SNMP\-MPD\-MIB::snmpMPDCompliance}
+{SNMP\-USER\-BASED\-SM\-MIB::usmMIBCompliance}
+{SNMPv2\-MIB::snmpMIB}
+{TCP\-MIB::tcpMIB}
+{IP\-MIB::ip}
+{UDP\-MIB::udpMIB}
+{SNMP\-VIEW\-BASED\-ACM\-MIB::vacmBasicGroup}
+{The SNMP Management Architecture MIB.}
+{The MIB for Message Processing and Dispatching.}
+{The management information definitions for the SNMP User\-based Security Model.}
+{The MIB module for SNMPv2 entities}
+{The MIB module for managing TCP implementations}
+{The MIB module for managing IP and ICMP implementations}
+{The MIB module for managing UDP implementations}
+{View\-based Access Control Model for SNMP.}
+{6}
+{6}
+{6}
+{6}
+{6}
+{6}
+{6}
+{6}
+
+errorInfo:
+
+Closing..
+.fo
+.SH "EXAMPLE TABLE"
+.nf 
+package require snmptools
+
+puts "Opening.."
+set ret [snmp session lo \-v2c \-c public \-OX localhost]
+
+puts "Getting.."
+set ret [lo table \-Cl \-CB \-Ci \-Cb \-Cc 80 \-Cw 80 ifTable]
+puts "Result: >>>>>>>>>>>>>>>\n$ret\n<<<<<<<<<<<<<<<<<<<<"
+puts "errorInfo: \n{ $errorInfo }"
+
+puts "Closing.."
+lo close
+.fo
+.SH "OUTPUT TABLE"
+.nf 
+Opening..
+Getting..
+Result: >>>>>>>>>>>>>>>
+{IF\-MIB::ifTable}
+
+{
+{Index                                                                           }
+{Descr                                                                           }
+{Type                                                                            }
+{Mtu                                                                             }
+{Speed                                                                           }
+{PhysAddress                                                                     }
+{AdminStatus                                                                     }
+{OperStatus                                                                      }
+{LastChange                                                                      }
+{InOctets                                                                        }
+{InUcastPkts                                                                     }
+{InNUcastPkts                                                                    }
+{InDiscards                                                                      }
+{InErrors                                                                        }
+{InUnknownProtos                                                                 }
+{OutOctets                                                                       }
+{OutUcastPkts                                                                    }
+{OutNUcastPkts                                                                   }
+{OutDiscards                                                                     }
+{OutErrors                                                                       }
+{OutQLen                                                                         }
+{Specific                                                                        }
+}
+
+{[1]}
+
+{
+{1                                                                               }
+{lo                                                                              }
+{softwareLoopback                                                                }
+{16436                                                                           }
+{10000000                                                                        }
+{                                                                                }
+{up                                                                              }
+{up                                                                              }
+{0:0:00:00.00                                                                    }
+{21723                                                                           }
+{274                                                                             }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{21723                                                                           }
+{274                                                                             }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{SNMPv2\-SMI::zeroDotZero                                                         }
+}
+
+{[2]}
+
+{
+{2                                                                               }
+{eth0                                                                            }
+{ethernetCsmacd                                                                  }
+{1500                                                                            }
+{100000000                                                                       }
+{0:3:d:46:de:35                                                                  }
+{up                                                                              }
+{up                                                                              }
+{0:0:00:00.00                                                                    }
+{10648968                                                                        }
+{27645                                                                           }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{1836946                                                                         }
+{18836                                                                           }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{SNMPv2\-SMI::zeroDotZero                                                         }
+}
+
+{[3]}
+
+{
+{3                                                                               }
+{eth1                                                                            }
+{ethernetCsmacd                                                                  }
+{1500                                                                            }
+{10000000                                                                        }
+{0:14:a5:97:3f:1f                                                                }
+{up                                                                              }
+{down                                                                            }
+{0:0:00:00.00                                                                    }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{309582                                                                          }
+{7371                                                                            }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{0                                                                               }
+{SNMPv2\-SMI::zeroDotZero                                                         }
+}
+
+
+<<<<<<<<<<<<<<<<<<<<
+errorInfo:
+{  }
+
+.fo
+.SH "EXAMPLE TRANSLATE"
+.nf 
+package require snmptools
+
+set errorInfo {}
+puts "Translating.."
+catch {set ret [snmp translate]}
+puts "errorInfo: \n{$errorInfo}"
+catch {puts "Result: $ret"}
+
+puts {\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-}
+
+set errorInfo {}
+puts "Translating.."
+catch {set ret [snmp translate \-Onf \-IR sysDescr]}
+puts "errorInfo: \n{$errorInfo}"
+catch {puts "Result: $ret"}
+.fo
+.SH "OUTPUT TRANSLATE"
+.nf 
+Translating..
+errorInfo:
+{Syntax error. Try \-\-help
+
+    while executing
+"snmp translate"}
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+Translating..
+errorInfo:
+{}
+Result: .iso.org.dod.internet.mgmt.mib\-2.system.sysDescr
+.fo
+.SH "EXAMPLE TRAP"
+.nf 
+package require snmptools
+
+set errorInfo {}
+puts "Sending trap.."
+catch {set ret [snmp trap \-v 1 \-c public udp:localhost:161 "" "" 0 0  ""]}
+puts "errorInfo: \n{ $errorInfo }"
+catch {puts "Result: $ret"}
+.fo
+.SH "OUTPUT TRAP"
+.nf 
+Sending trap..
+errorInfo:
+{  }
+Result:
+.fo
+.SH "AUTHOR"
+Alexandros Stergiakis <sterg@kth.se>
+.SH "COPYRIGHT"
+.PP 
+Copyright (C) 2008  Alexandros Stergiakis
+.PP 
+This program is free software: you can redistribute it and/or 
+.br 
+modify it under the terms of the GNU General Public License as 
+.br 
+published by the Free Software Foundation, either version 3 of 
+.br 
+the License, or (at your option) any later version.
+.PP 
+This program is distributed in the hope that it will be useful,
+.br 
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+.br 
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.br 
+GNU General Public License for more details.
+.PP 
+You should have received a copy of the GNU General Public License
+.br 
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

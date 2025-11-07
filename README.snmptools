@@ -1,0 +1,42 @@
+inotify - SNMP Agent Access Tools
+
+This Tcl package uses the Net-SNMP library to access SNMP agents to retrieve/set information
+on them. It is heavily based on the code that implements that command line utilities that come
+together with Net-SNMP, and in fact, it supports exactly the same arguments as they do
+(as of Net-SNMP 5.4.1); so you don't have to learn two different syntaxes.
+
+It supports all the standard functions:
+connect, close, get, set, getnext, walk, bulkget, bulkwalk, trap, translate, table
+
+For instructions on how to use, consult the snmptools (n) man page.
+
+To make type:
+
+      ./configure
+      make 
+      make install
+
+The configure script will deduce $PREFIX from the tcl installation.
+The generated Makefile uses the file $PREFIX/lib/tclConfig.sh that was left by
+the make of tcl for most of its configuration parameters.
+
+The Makefile generates pkgIndex.tcl files that are compatible with tcl >= 7.6.
+
+Written by:  Alexandros Stergiakis (sterg@kth.se)
+
+Use at your own risk.
+
+    Copyright (C) 2008  Alexandros Stergiakis
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
