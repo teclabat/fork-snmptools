@@ -162,6 +162,21 @@ CLEANFILES	= @CLEANFILES@
 
 CPPFLAGS	= @CPPFLAGS@
 LIBS		= @PKG_LIBS@ @LIBS@
+
+# Platform-specific libraries
+# On Windows (MinGW/MSYS/Cygwin): need ws2_32 (WinSock) and regex libraries
+# On Linux/Unix: these functions are in libc, no additional libs needed
+ifeq ($(EXEEXT),.exe)
+    # Windows platform detected
+    PLATFORM_LIBS = -lws2_32 -lregex
+else
+    # Unix/Linux platform
+    PLATFORM_LIBS =
+endif
+
+# Add platform-specific libs and ensure crypto is included
+LIBS := $(LIBS) $(PLATFORM_LIBS) -lcrypto
+
 AR		= @AR@
 CFLAGS		= @CFLAGS@
 COMPILE		= $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
