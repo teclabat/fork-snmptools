@@ -1,0 +1,84 @@
+#!/usr/bin/env tclsh
+# snmptools.test - Test suite for snmptools package
+#
+# This test suite starts an SNMP server in the background for each test
+# and terminates it after the test completes.
+
+package require tcltest 2.0
+namespace import ::tcltest::*
+
+# Configure tcltest
+configure -verbose {pass skip start error}
+
+# Load the snmptools package
+set testDir [file dirname [info script]]
+set parentDir [file dirname $testDir]
+lappend auto_path $parentDir
+package require snmptools
+
+# Configuration
+set ::PYTHON_BIN "D:/Programs/msys2/mingw64/bin/python.exe"
+#set ::PYTHON_BIN "python"
+set ::SNMP_SERVER_SCRIPT [file join $testDir "snmp-server.py"]
+set ::SNMP_PORT 1611
+set ::SNMP_HOST "127.0.0.1"
+set ::SERVER_PID ""
+set ::SERVER_CHAN ""
+
+# Helper procedure to start SNMP server
+proc startSnmpServer {} {
+    global PYTHON_BIN SNMP_SERVER_SCRIPT SNMP_PORT SERVER_PID SERVER_CHAN
+
+    # Start server in background
+    set SERVER_CHAN [open "|$PYTHON_BIN $SNMP_SERVER_SCRIPT -p $SNMP_PORT 2>@1" r]
+    fconfigure $SERVER_CHAN -blocking 0
+    set SERVER_PID [pid $SERVER_CHAN]
+
+    # Give server time to start
+    after 2000
+
+    return $SERVER_PID
+}
+
+# Helper procedure to stop SNMP server
+proc stopSnmpServer {} {
+    global SERVER_PID SERVER_CHAN
+
+    after 2000
+    if {$SERVER_PID ne ""} {
+        # Try to kill the process (Windows-compatible)
+        catch {exec taskkill //F //PID $SERVER_PID} msg copt
+        set SERVER_PID ""
+    }
+    if {[info exists SERVER_CHAN] && $SERVER_CHAN ne ""} {
+        catch {close $SERVER_CHAN}
+        set SERVER_CHAN ""
+    }
+}
+
+# Start server once for all tests
+startSnmpServer
+
+# Test 1: Create SNMP session
+test snmp-session-1.0 {Create SNMP v2c session} -setup {
+} -body {
+    snmp session sn -v2c -c public $::SNMP_HOST:$::SNMP_PORT
+    info commands sn
+} -cleanup {
+    catch {sn close}
+} -result {sn}
+
+# Test 2: SNMP GET request for sysDescr
+test snmp-get-2.0 {SNMP GET request for sysDescr} -match glob -setup {
+} -body {
+    snmp session sn -v2c -c public $::SNMP_HOST:$::SNMP_PORT
+    sn get 1.3.6.1.2.1.1.1.0
+} -cleanup {
+    catch {sn close}
+} -result {"*3.6.1.2.1.1.1.0*"}
+
+# Stop server after all tests
+stopSnmpServer
+
+# Run all tests and print summary
+cleanupTests
